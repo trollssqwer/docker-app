@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: pull image
+      shell: "sudo docker pull trollssqwer/argtest:1.0.0"
+    - name: run image with mount volmue
+      shell: "sudo docker run -it -d -v /home/ubuntu/data_all/data:/app/data -v /home/ubuntu/data_all/data_crawler:/app/data_done trollssqwer/argtest:1.0.0 {{item}}"
+      with_sequence: start=0 end=1 stride=1

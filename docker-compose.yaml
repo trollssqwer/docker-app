@@ -1,0 +1,25 @@
+version: "3"
+services:
+  chromedriver:
+      image: selenium/standalone-chrome
+      ports: 
+        - "4444:4444"
+
+  steam_parser:
+      build: .
+      command: python3 test_sele_docker.py 1
+      network_mode: "host"
+      volumes:
+        - /Users/tranthong/Downloads/MaSoThue/data1:/app/data 
+        - /Users/tranthong/Downloads/MaSoThue/data_crawler:/app/data_done
+      # links:
+      #   - chromedriver
+  steam_parser2:
+      build: .
+      command: python3 test_sele_docker.py 2
+      network_mode: "host"
+      volumes:
+        - /Users/tranthong/Downloads/MaSoThue/data2:/app/data 
+        - /Users/tranthong/Downloads/MaSoThue/data_crawler:/app/data_done
+      # links:
+      #   - chromedriver

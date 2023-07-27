@@ -1,0 +1,4 @@
+
+[lab]
+lab1 ansible_host=103.9.211.97 ansible_user=ubuntu
+lab2 ansible_host=103.9.211.37 ansible_user=ubuntu

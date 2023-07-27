@@ -1,0 +1,6 @@
+pandas==2.0.3
+pathlib==1.0.1
+requests==2.31.0
+selenium==4.10.0
+undetected_chromedriver==3.5.0
+selenium-wire==5.1.0

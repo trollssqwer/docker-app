@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: true
+  gather_facts: no
+  vars:
+    - test: 1
+  tasks:
+    - name: copy source data
+      # fetch:
+      #   src: /home/ubuntu/data_all/data_crawler
+      #   dest: /Users/tranthong/Desktop/test_data/
+      ansible.builtin.fetch:
+        src: /home/ubuntu/data_all/data_crawler/
+        dest: /Users/tranthong/Desktop/test_data/
