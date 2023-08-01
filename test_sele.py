@@ -69,13 +69,14 @@ def set_up_driver(PROXY):
         chromeOptions = Options()
         chromeOptions.add_argument("--disable-extensions")
         chromeOptions.add_argument("--incognito")
-        # chromeOptions.add_argument("--headless")
+        chromeOptions.add_argument("--headless")
         chromeOptions.add_argument("start-maximized")
         chromeOptions.add_argument("--allow-running-insecure-content")
         chromeOptions.add_argument("--ignore-certificate-errors")
         chromeOptions.add_argument('--no-sandbox')
         chromeOptions.add_argument('--proxy-server=%s' % PROXY)
-        driver = uc.Chrome(options= chromeOptions, driver_executable_path='/Users/tranthong/Downloads/chromedriver_mac64/chromedriver')
+        driver = webdriver.Chrome(options= chromeOptions)
+        # driver = uc.Chrome(options= chromeOptions, driver_executable_path='/Users/tranthong/Downloads/chromedriver_mac64/chromedriver')
         driver.get(google)
     except Exception as e:
         print(e)
@@ -84,13 +85,14 @@ def set_up_driver(PROXY):
         chromeOptions = Options()
         chromeOptions.add_argument("--disable-extensions")
         chromeOptions.add_argument("--incognito")
-        # chromeOptions.add_argument("--headless")
+        chromeOptions.add_argument("--headless")
         chromeOptions.add_argument("start-maximized")
         chromeOptions.add_argument("--allow-running-insecure-content")
         chromeOptions.add_argument("--ignore-certificate-errors")
         chromeOptions.add_argument('--no-sandbox')
         chromeOptions.add_argument('--proxy-server=%s' % PROXY)
-        driver = uc.Chrome(options= chromeOptions, driver_executable_path='/Users/tranthong/Downloads/chromedriver_mac64/chromedriver')
+        driver = webdriver.Chrome(options= chromeOptions)
+        # driver = uc.Chrome(options= chromeOptions, driver_executable_path='/Users/tranthong/Downloads/chromedriver_mac64/chromedriver')
         driver.get(google)
     action = webdriver.ActionChains(driver )
 
@@ -100,9 +102,11 @@ def set_up_driver(PROXY):
 proxy_index = randint(0, len(proxy_list) - 1)
 driver, action = set_up_driver(proxy_list[proxy_index])
 reset_driver_number = 3
+i = 0
 def search_view(x):
     global driver
     global action
+    global i
     data = x['all']
     idx = x['id']
     text = data.lower()
@@ -130,10 +134,12 @@ def search_view(x):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, '//textarea[contains(@title, "%s")]' % flaceholder)))
         search_form = driver.find_element(By.XPATH, '//textarea[contains(@title, "%s")]' % flaceholder)
-        time.sleep(randint(1, 3))
+        time.sleep(randint(1, 2))
         search_form.clear()
         search_form.send_keys(str(data) + " masothue.com")
-        time.sleep(randint(1, 3))
+        # search_form.send_keys('test '+ str(i))
+        print(str(data) + " masothue.com")
+        time.sleep(randint(1, 2))
         action.send_keys(Keys.ENTER)
         action.perform()
     except Exception:

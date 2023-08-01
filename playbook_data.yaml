@@ -5,14 +5,10 @@
   vars:
     test: 1
   tasks:
-    # - name: copy source daemon set up docker file
-    #   ansible.builtin.copy:
-    #     src: /Users/tranthong/Desktop/docker-app/daemon.json
-    #     dest: /etc/docker/daemon.json
-    # - name: copy python script 
-    #   ansible.builtin.copy:
-    #     src: /Users/tranthong/Desktop/docker-app/
-    #     dest: /home/ubuntu/app1/
+    - name: copy source daemon set up docker file
+      ansible.builtin.copy:
+        src: /Users/tranthong/Desktop/docker-app/requirements.txt
+        dest: /home/ubuntu/app/
     - name: copy python script 
       ansible.builtin.copy:
         src: /Users/tranthong/Desktop/docker-app/test_sele_vps.py
@@ -37,6 +33,21 @@
 #         dest: /home/ubuntu/data_all/data/
 
 # - hosts: lab2
+#   become: true
+#   gather_facts: false
+#   vars:
+#     test: 1
+#   tasks:
+#     - name: Creates directory
+#       file:
+#         path: /home/ubuntu/data_all/data_crawler
+#         state: directory
+#     - name: copy source data
+#       ansible.builtin.copy:
+#         src: /Users/tranthong/Downloads/MaSoThue/data2/
+#         dest: /home/ubuntu/data_all/data/
+
+# - hosts: lab3
 #   become: true
 #   gather_facts: false
 #   vars:

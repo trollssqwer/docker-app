@@ -28,22 +28,22 @@
         state: latest
         update_cache: true
 
-    - name: Add Docker GPG apt Key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
+    # - name: Add Docker GPG apt Key
+    #   apt_key:
+    #     url: https://download.docker.com/linux/ubuntu/gpg
+    #     state: present
 
-    - name: Update apt and install docker-ce
-      apt:
-        name: docker-ce
-        state: latest
-        update_cache: true
+    # - name: Update apt and install docker-ce
+    #   apt:
+    #     name: docker-ce
+    #     state: latest
+    #     update_cache: true
 
-    - name: Install Docker Module for Python
-      pip:
-        name: docker
+    # - name: Install Docker Module for Python
+    #   pip:
+    #     name: docker
     
-    - name: update docker daemon 
-      shell: "sudo systemctl daemon-reload"
-    - name: restart docker
-      shell: "sudo systemctl restart docker"
+    # - name: update docker daemon 
+    #   shell: "sudo systemctl daemon-reload"
+    # - name: restart docker
+    #   shell: "sudo systemctl restart docker"
