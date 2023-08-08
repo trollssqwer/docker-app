@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: true
+  gather_facts: no
+  tasks:
+    - name: kill all session 
+      shell: sudo pkill -f tmux
+      ignore_errors: true
+    # - name: run tmux session
+    #   shell: sudo tmux new -d -s test_sele_1 sudo python3 app/test_sele_vps.py
+
+- hosts: lab2
+  become: true
+  gather_facts: no
+  tasks:
+    - name: run tmux session 0
+      shell: tmux new -d -s test_sele_0 python3 app/test_sele_vps.py 0
+    - name: run tmux session 1
+      shell: tmux new -d -s test_sele_1 python3 app/test_sele_vps.py 1
+    - name: run tmux session 2
+      shell: tmux new -d -s test_sele_2 python3 app/test_sele_vps.py 2
+    # - name: run tmux session 3
+    #   shell: tmux new -d -s test_sele_3 python3 app/test_sele_vps.py 3
+    # - name: run tmux session 3
+    #   shell: sudo tmux new -d -s test_sele_3 sudo python3 app/test_sele_vps.py 3
+    # - name: run tmux session 4
+    #   shell: sudo tmux new -d -s test_sele_4 sudo python3 app/test_sele_vps.py 4

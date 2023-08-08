@@ -5,10 +5,10 @@
   vars:
     test: 1
   tasks:
-    - name: copy source daemon set up docker file
-      ansible.builtin.copy:
-        src: /Users/tranthong/Desktop/docker-app/requirements.txt
-        dest: /home/ubuntu/app/
+    # - name: copy source daemon set up docker file
+    #   ansible.builtin.copy:
+    #     src: /Users/tranthong/Desktop/docker-app/requirements.txt
+    #     dest: /home/ubuntu/app/
     - name: copy python script 
       ansible.builtin.copy:
         src: /Users/tranthong/Desktop/docker-app/test_sele_vps.py

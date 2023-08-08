@@ -9,24 +9,30 @@
     default_container_command: sleep 1d
 
   tasks:
-    - name: Install aptitude
-      apt:
-        name: aptitude
-        state: latest
-        update_cache: true
+    # - name: update public key 
+    #   ansible.builtin.copy:
+    #     src: /Users/tranthong/Downloads/id_rsa.pub
+    #     dest: /home/ubuntu/.ssh
+    # - name: update chmode
+    #   shell: sudo chmod 600 /home/ubuntu/.ssh/id_rsa.pub
+    # - name: Install aptitude
+    #   apt:
+    #     name: aptitude
+    #     state: latest
+    #     update_cache: true
 
-    - name: Install required system packages
-      apt:
-        pkg:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - software-properties-common
-          - python3-pip
-          - virtualenv
-          - python3-setuptools
-        state: latest
-        update_cache: true
+    # - name: Install required system packages
+    #   apt:
+    #     pkg:
+    #       - apt-transport-https
+    #       - ca-certificates
+    #       - curl
+    #       - software-properties-common
+    #       - python3-pip
+    #       - virtualenv
+    #       - python3-setuptools
+    #     state: latest
+    #     update_cache: true
 
     # - name: Add Docker GPG apt Key
     #   apt_key:

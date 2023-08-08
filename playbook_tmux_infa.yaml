@@ -1,52 +1,75 @@
 ---
-- hosts: all
+# - hosts: all
+#   gather_facts: no
+#   become: yes
+#   tasks:
+    # - name: Install aptitude
+    #   apt:
+    #     name: aptitude
+    #     state: latest
+    #     update_cache: true
+
+    # - name: Install required system packages
+    #   apt:
+    #     pkg:
+    #       - apt-transport-https
+    #       - ca-certificates
+    #       - curl
+    #       - software-properties-common
+    #       - python3-pip
+    #       - virtualenv
+    #       - python3-setuptools
+    #     state: latest
+    #     update_cache: true
+
+    # - name: install requirements 
+    #   shell: pip install  -r /home/ubuntu/app/requirements.txt
+    # - name: install tmux
+    #   shell: sudo apt-get install tmux
+
+    # - name: download google chrome 
+    #   shell: wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    # - name: install google chrome 
+    #   shell: sudo dpkg -i google-chrome-stable_current_amd64.deb
+    #   ignore_errors: true
+
+    # - name: fix dpkg
+    #   shell: sudo dpkg --configure -a
+    #   ignore_errors: true
+    # - name: fix bug google chrome
+    #   ansible.builtin.expect:
+    #     command: sudo apt-get install -f
+    #     responses:
+    #       Do you want to continue?: "Y"
+
+
+    # - name: install display
+    #   ansible.builtin.expect:
+    #     command: sudo apt install -y xvfb
+    #     responses:
+    #       Do you want to continue?: "Y"
+    # - name: install display
+    #   shell: pip install pyvirtualdisplay
+    #   ignore_errors: true
+    # - name: get chromedriver
+    #   ansible.builtin.copy:
+    #     src: /Users/tranthong/Downloads/chromedriver_linux64 (3)/chromedriver
+    #     dest: /usr/bin/chromedriver
+    # - name: set chmode
+    #   shell: sudo chown root:root /usr/bin/chromedriver
+    # - name: check chmode
+    #   shell: sudo chmod +x /usr/bin/chromedriver
+- hosts: lab3
   gather_facts: no
   become: yes
   tasks:
-    - name: Install aptitude
-      apt:
-        name: aptitude
-        state: latest
-        update_cache: true
-
-    - name: Install required system packages
-      apt:
-        pkg:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - software-properties-common
-          - python3-pip
-          - virtualenv
-          - python3-setuptools
-        state: latest
-        update_cache: true
-
-    - name: install requirements 
-      shell: pip install  -r /home/ubuntu/app/requirements.txt
-    - name: install tmux
-      shell: sudo apt-get install tmux
-
-    - name: download google chrome 
-      shell: wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    - name: install google chrome 
-      shell: sudo dpkg -i google-chrome-stable_current_amd64.deb
-      ignore_errors: true
-
-    - name: fix dpkg
+    - name: fix test
       shell: sudo dpkg --configure -a
-      ignore_errors: true
-    - name: fix bug google chrome
+    - name: install gnome 
       ansible.builtin.expect:
-        command: sudo apt-get install -f
+        command: sudo apt install gnome-session gdm3
         responses:
           Do you want to continue?: "Y"
-
-    - name: get chromedriver
-      ansible.builtin.copy:
-        src: /Users/tranthong/Downloads/chromedriver_linux64 (3)/chromedriver
-        dest: /usr/bin/chromedriver
-    - name: set chmode
-      shell: sudo chown root:root /usr/bin/chromedriver
-    - name: check chmode
-      shell: sudo chmod +x /usr/bin/chromedriver
+      ignore_errors: true
+    - name: set graph pwd
+      shell: sudo apt install gnome-session gdm3
