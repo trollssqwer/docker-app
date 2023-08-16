@@ -37,8 +37,8 @@ proxy_list =[
 '103.170.247.252:10090'
 ]
 number_of_groups = 3
-# proxy_group = int(sys.argv[1]) * 3
-# proxy_list = proxy_list[proxy_group:proxy_group+3]
+proxy_group = 6
+proxy_list = proxy_list[proxy_group:proxy_group+3]
 # proxy_list.append('localhost')
 
 latest_proxy_index = proxy_list[0]
@@ -46,6 +46,7 @@ latest_proxy_index = proxy_list[0]
 
 
 def set_up_driver(PROXY):
+    print(PROXY)
     google = "https://google.com"
     # replace 'your_absolute_path' with your chrome binary's aboslute path
     # driver = webdriver.Chrome(seleniumwire_options=options, options = chromeOptions)
@@ -55,10 +56,12 @@ def set_up_driver(PROXY):
         chromeOptions.add_argument("--disable-extensions")
         chromeOptions.add_argument("--incognito")
         # chromeOptions.add_argument("--headless")
+        if PROXY != 'localhost':
+            chromeOptions.add_argument('--proxy-server=%s' % PROXY)
         # chromeOptions.add_argument("start-maximized")
         chromeOptions.add_argument("--allow-running-insecure-content")
         chromeOptions.add_argument("--ignore-certificate-errors")
-        # chromeOptions.add_argument('--no-sandbox')
+        chromeOptions.add_argument('--no-sandbox')
         # if PROXY != 'localhost':
         #     chromeOptions.add_argument('--proxy-server=%s' % PROXY)
         prefs = {  "directory_upgrade": True}
@@ -76,11 +79,13 @@ def set_up_driver(PROXY):
         chromeOptions = Options()
         chromeOptions.add_argument("--disable-extensions")
         chromeOptions.add_argument("--incognito")
+        if PROXY != 'localhost':
+            chromeOptions.add_argument('--proxy-server=%s' % PROXY)        
         # chromeOptions.add_argument("--headless")
         # chromeOptions.add_argument("start-maximized")
         chromeOptions.add_argument("--allow-running-insecure-content")
         chromeOptions.add_argument("--ignore-certificate-errors")
-        # chromeOptions.add_argument('--no-sandbox')
+        chromeOptions.add_argument('--no-sandbox')
         # chromeOptions.set_capability("acceptInsecureCerts", True)
         # chromeOptions.set_capability("acceptSslCerts", True)
         # chromeOptions.add_argument('--proxy-server=%s' % PROXY)
@@ -96,7 +101,7 @@ def set_up_driver(PROXY):
 
 proxy_index = randint(0, len(proxy_list) - 1)
 driver, action = set_up_driver(proxy_list[proxy_index])
-reset_driver_number = 10
+reset_driver_number = 100
 i = 0
 def search_view(x):
     global driver
@@ -129,46 +134,79 @@ def search_view(x):
     try:
         driver.get(google)
         time.sleep(1)
-        flaceholder = "Tìm kiếm"
         print('Tìm kiếm')
+        # print(driver.page_source)
         print(str(data) + " masothue.com")
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, '//textarea[contains(@title, "%s")]' % flaceholder)))
-        search_form = driver.find_element(By.XPATH, '//textarea[contains(@title, "%s")]' % flaceholder)
-        time.sleep(1)
-        search_form.clear()
-        time.sleep(1)
+        # print(driver.page_source)
+        flaceholder = "Tìm"
+        try:
+            # print('Tìm kiếm input')
+            raw_html = str(driver.page_source)
+            lang = re.search('Tìm', raw_html)
+            box = re.search('textarea', raw_html)
+            if not lang:
+                print('change to english')
+                flaceholder = "Search"
+            if box:
+                WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located((By.XPATH, '//textarea[contains(@title, "%s")]' % flaceholder)))
+                search_form = driver.find_element(By.XPATH, '//textarea[contains(@title, "%s")]' % flaceholder)
+            else:
+                WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located((By.XPATH, '//input[contains(@title, "%s")]' % flaceholder)))
+                search_form = driver.find_element(By.XPATH, '//input[contains(@title, "%s")]' % flaceholder)
+            print('find box ok')
+        except Exception as e:
+            print('box fail')
         search_form.send_keys(str(data) + " masothue.com")
         # search_form.send_keys('test '+ str(i))
-        time.sleep(1)
-        action.send_keys(Keys.ENTER)
-        action.perform()
-        time.sleep(1)
-    except Exception as e:
-        print("Failed ", e)
-        return None
-    list_a_masothue = driver.find_elements(By.XPATH, '//a[contains(@href, "%s")]' % url_contain)
+        # time.sleep(1)
+        sub_btn = driver.find_element(By.NAME, 'btnK')
+        driver.execute_script("arguments[0].click();", sub_btn)
+        # action.send_keys(Keys.ENTER)
+        # action.perform()
+        print('send ok')
 
-    if not list_a_masothue:
-        print('list href empty! maybe block by google')
-        try:
-            solver = RecaptchaSolver(driver=driver)
-            recaptcha_iframe = driver.find_element(By.XPATH, '//iframe[@title="reCAPTCHA"]')
-            solver.click_recaptcha_v2(iframe=recaptcha_iframe)
-            time.sleep(5)
-        except Exception as e:
-            print("resolver capcha fail ", e)
 
-    for a in list_a_masothue:
-        href = a.get_attribute('href')
-        print(href)
-        match = re.search('(https://masothue.*)', str(href))
+        list_a_masothue = driver.find_element(By.XPATH, '//*[@id="rso"]/div[1]')
+
+        print('has element' , list_a_masothue)
+        raw_html = str(driver.page_source)
+        match = re.search('(https://masothue\.com/.+?)\"|(https://masothue\.com/.+?)\&ved',list_a_masothue)
         if match:
             print(str(match.group(1)))
             return str(match.group(1))
         else:
             print('None')
             return None
+    except Exception as e:
+        print("Failedd ", e)
+        return None
+    
+
+    # list_a_masothue = driver.find_elements(By.XPATH, '//a[contains(@href, "%s")]' % url_contain)
+    # if not list_a_masothue:
+    #     print('list href empty! maybe block by google')
+    #     try:
+    #         solver = RecaptchaSolver(driver=driver)
+    #         time.sleep(1)
+    #         recaptcha_iframe = driver.find_element(By.XPATH, '//iframe[@title="reCAPTCHA"]')
+    #         time.sleep(1)
+    #         solver.click_recaptcha_v2(iframe=recaptcha_iframe)
+    #         time.sleep(1)
+    #     except Exception as e:
+    #         print("resolver capcha fail ", e)
+
+    # for a in list_a_masothue:
+    #     href = a.get_attribute('href')
+    #     print(href)
+    #     match = re.search('(https://masothue.*)', str(href))
+    #     if match:
+    #         print(str(match.group(1)))
+    #         return str(match.group(1))
+    #     else:
+    #         print('None')
+    #         return None
 
 path = '/Users/tranthong/Downloads/MaSoThue/data1'
 done_path = '/Users/tranthong/Downloads/MaSoThue/data_crawler'

@@ -18,6 +18,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import DesiredCapabilities
 import random
+import re
 from selenium_recaptcha_solver import RecaptchaSolver
 from pyvirtualdisplay import Display
 try:
@@ -37,64 +38,51 @@ proxy_list =[
 '103.170.246.51:10090',
 '103.170.247.252:10090'
 ]
-number_of_groups = 5
-proxy_group = int(sys.argv[1]) * 2
-proxy_list = proxy_list[proxy_group:proxy_group+2]
+number_of_groups = 3
+proxy_group = int(sys.argv[1]) * 3
+proxy_list = proxy_list[proxy_group:proxy_group+3]
 proxy_list.append('localhost')
 
 latest_proxy_index = proxy_list[0]
-sleep_time = 1
 
+test_ua = 'Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
 display = Display(visible=0, size=(800, 800))
 display.start()
 
 def set_up_driver(PROXY):
-    global sleep_time
-    sleep_time = 1
+    global driver
     google = "https://google.com.vn"
     # replace 'your_absolute_path' with your chrome binary's aboslute path
     # driver = webdriver.Chrome(seleniumwire_options=options, options = chromeOptions)
     # driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', seleniumwire_options=options, options = chromeOptions)\
     try:
-        chromeOptions = Options()
-        chromeOptions.add_argument("--disable-extensions")
-        chromeOptions.add_argument("--incognito")
-        # chromeOptions.add_argument("--headless")
-        # chromeOptions.add_argument("start-maximized")
-        chromeOptions.add_argument("--allow-running-insecure-content")
-        chromeOptions.add_argument("--ignore-certificate-errors")
-        chromeOptions.add_argument('--no-sandbox')
+        options = Options()
+        #options.add_argument("--headless=new")
         if PROXY != 'localhost':
-            sleep_time = 3
-            chromeOptions.add_argument('--proxy-server=%s' % PROXY)
-        prefs = {  "directory_upgrade": True}
-        chromeOptions.add_experimental_option("prefs", prefs)
-        # chromeOptions.set_capability("acceptInsecureCerts", True)
-        # chromeOptions.set_capability("acceptSslCerts", True)
-        driver = webdriver.Chrome(options= chromeOptions)
-        # driver = uc.Chrome(options= chromeOptions, driver_executable_path='/Users/tranthong/Downloads/chromedriver_mac64/chromedriver')
+            options.add_argument('--proxy-server=%s' % PROXY)
+        options.add_argument("--window-size=1920,1080")
+        options.add_argument(f'--user-agent={test_ua}')
+        options.add_argument('--no-sandbox')
+        options.add_argument("--disable-extensions")
+        driver = webdriver.Chrome(options= options)
         driver.get(google)
-        time.sleep(3)
+        time.sleep(1)
     except Exception as e:
+        driver.close()
+        driver.quit()
         print(e)
         print('new network')
-        PROXY = proxy_list[randint(0, len(proxy_list) - 1)]
-        chromeOptions = Options()
-        chromeOptions.add_argument("--disable-extensions")
-        chromeOptions.add_argument("--incognito")
-        # chromeOptions.add_argument("--headless")
-        # chromeOptions.add_argument("start-maximized")
-        chromeOptions.add_argument("--allow-running-insecure-content")
-        chromeOptions.add_argument("--ignore-certificate-errors")
-        # chromeOptions.add_argument('--no-sandbox')
-        # chromeOptions.set_capability("acceptInsecureCerts", True)
-        # chromeOptions.set_capability("acceptSslCerts", True)
-        # chromeOptions.add_argument('--proxy-server=%s' % PROXY)
+        options = Options()
         if PROXY != 'localhost':
-            chromeOptions.add_argument('--proxy-server=%s' % PROXY)
-        driver = webdriver.Chrome(options= chromeOptions)
+            options.add_argument('--proxy-server=%s' % PROXY)
+        #options.add_argument("--headless=new")
+        options.add_argument("--window-size=1920,1080")
+        options.add_argument(f'--user-agent={test_ua}')
+        options.add_argument('--no-sandbox')
+        options.add_argument("--disable-extensions")
+        driver = webdriver.Chrome(options= options)
         driver.get(google)
-        time.sleep(3)
+        time.sleep(1)
     action = webdriver.ActionChains(driver )
 
     return driver, action
@@ -102,7 +90,7 @@ def set_up_driver(PROXY):
 
 proxy_index = randint(0, len(proxy_list) - 1)
 driver, action = set_up_driver(proxy_list[proxy_index])
-reset_driver_number = 50
+reset_driver_number = 20
 i = 0
 def search_view(x):
     global driver
@@ -126,7 +114,6 @@ def search_view(x):
     if(int(idx) % reset_driver_number == 0 and int(idx) >= reset_driver_number):
         driver.close()
         driver.quit()
-        display.stop()
         proxy_index = randint(0, len(proxy_list) - 1)
         while latest_proxy_index == proxy_index:
             proxy_index = randint(0, len(proxy_list) - 1)
@@ -162,10 +149,10 @@ def search_view(x):
             print('find box ok')
         except Exception as e:
             print('box fail')
-        time.sleep(sleep_time)
+        time.sleep(1)
         search_form.send_keys(str(data) + " masothue.com")
         # search_form.send_keys('test '+ str(i))
-        time.sleep(sleep_time)
+        time.sleep(1)
         action.send_keys(Keys.ENTER)
         action.perform()
     except Exception as e:
@@ -185,7 +172,6 @@ def search_view(x):
             print('Resolver capcha done !')
         except Exception as e:
             print("resolver capcha fail ", e)
-
 
     for a in list_a_masothue:
         href = a.get_attribute('href')
@@ -220,4 +206,3 @@ for filename in files:
             done_df.to_csv(done_path)
     except:
         print('fail to get file chunk')
-

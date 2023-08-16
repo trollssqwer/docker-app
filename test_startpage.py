@@ -19,7 +19,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import DesiredCapabilities
 import random
 from selenium_recaptcha_solver import RecaptchaSolver
-from pyvirtualdisplay import Display
 try:
     print("\nfile name is :" , sys.argv[0])
 except:
@@ -37,21 +36,17 @@ proxy_list =[
 '103.170.246.51:10090',
 '103.170.247.252:10090'
 ]
-number_of_groups = 5
-proxy_group = int(sys.argv[1]) * 2
-proxy_list = proxy_list[proxy_group:proxy_group+2]
-proxy_list.append('localhost')
+number_of_groups = 3
+# proxy_group = int(sys.argv[1]) * 3
+# proxy_list = proxy_list[proxy_group:proxy_group+3]
+# proxy_list.append('localhost')
 
 latest_proxy_index = proxy_list[0]
-sleep_time = 1
 
-display = Display(visible=0, size=(800, 800))
-display.start()
+
 
 def set_up_driver(PROXY):
-    global sleep_time
-    sleep_time = 1
-    google = "https://google.com.vn"
+    google = "https://www.startpage.com/"
     # replace 'your_absolute_path' with your chrome binary's aboslute path
     # driver = webdriver.Chrome(seleniumwire_options=options, options = chromeOptions)
     # driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', seleniumwire_options=options, options = chromeOptions)\
@@ -59,14 +54,14 @@ def set_up_driver(PROXY):
         chromeOptions = Options()
         chromeOptions.add_argument("--disable-extensions")
         chromeOptions.add_argument("--incognito")
+        chromeOptions.add_experimental_option("excludeSwitches", ['enable-automation'])
         # chromeOptions.add_argument("--headless")
         # chromeOptions.add_argument("start-maximized")
         chromeOptions.add_argument("--allow-running-insecure-content")
         chromeOptions.add_argument("--ignore-certificate-errors")
         chromeOptions.add_argument('--no-sandbox')
-        if PROXY != 'localhost':
-            sleep_time = 3
-            chromeOptions.add_argument('--proxy-server=%s' % PROXY)
+        # if PROXY != 'localhost':
+        #     chromeOptions.add_argument('--proxy-server=%s' % PROXY)
         prefs = {  "directory_upgrade": True}
         chromeOptions.add_experimental_option("prefs", prefs)
         # chromeOptions.set_capability("acceptInsecureCerts", True)
@@ -74,7 +69,7 @@ def set_up_driver(PROXY):
         driver = webdriver.Chrome(options= chromeOptions)
         # driver = uc.Chrome(options= chromeOptions, driver_executable_path='/Users/tranthong/Downloads/chromedriver_mac64/chromedriver')
         driver.get(google)
-        time.sleep(3)
+        time.sleep(1)
     except Exception as e:
         print(e)
         print('new network')
@@ -86,15 +81,15 @@ def set_up_driver(PROXY):
         # chromeOptions.add_argument("start-maximized")
         chromeOptions.add_argument("--allow-running-insecure-content")
         chromeOptions.add_argument("--ignore-certificate-errors")
-        # chromeOptions.add_argument('--no-sandbox')
+        chromeOptions.add_argument('--no-sandbox')
         # chromeOptions.set_capability("acceptInsecureCerts", True)
         # chromeOptions.set_capability("acceptSslCerts", True)
         # chromeOptions.add_argument('--proxy-server=%s' % PROXY)
-        if PROXY != 'localhost':
-            chromeOptions.add_argument('--proxy-server=%s' % PROXY)
+        # if PROXY != 'localhost':
+        #     chromeOptions.add_argument('--proxy-server=%s' % PROXY)
         driver = webdriver.Chrome(options= chromeOptions)
         driver.get(google)
-        time.sleep(3)
+        time.sleep(2)
     action = webdriver.ActionChains(driver )
 
     return driver, action
@@ -102,12 +97,12 @@ def set_up_driver(PROXY):
 
 proxy_index = randint(0, len(proxy_list) - 1)
 driver, action = set_up_driver(proxy_list[proxy_index])
-reset_driver_number = 50
+reset_driver_number = 100
 i = 0
 def search_view(x):
     global driver
     global action
-    global display
+
     global i
     global latest_proxy_index
     data = x['all']
@@ -116,7 +111,7 @@ def search_view(x):
     text = text.replace(' ', '+')
     text = text.replace(',', '+')
     text = text.replace('++', '+')
-    google = "https://google.com.vn"
+    google = "https://www.startpage.com/"
     url_contain = 'https://masothue.com'
     code = ''
     href = ''
@@ -126,10 +121,8 @@ def search_view(x):
     if(int(idx) % reset_driver_number == 0 and int(idx) >= reset_driver_number):
         driver.close()
         driver.quit()
-        display.stop()
         proxy_index = randint(0, len(proxy_list) - 1)
-        while latest_proxy_index == proxy_index:
-            proxy_index = randint(0, len(proxy_list) - 1)
+
         print("Proxy" ,proxy_list[proxy_index])
         latest_proxy_index = proxy_index
         driver, action = set_up_driver(proxy_list[proxy_index])
@@ -138,11 +131,12 @@ def search_view(x):
         driver.get(google)
         time.sleep(1)
         print('Tìm kiếm')
+        # print(driver.page_source)
         print(str(data) + " masothue.com")
         # print(driver.page_source)
         flaceholder = "Tìm"
         try:
-            print('Tìm kiếm input')
+            # print('Tìm kiếm input')
             raw_html = str(driver.page_source)
             lang = re.search('Tìm', raw_html)
             box = re.search('textarea', raw_html)
@@ -150,42 +144,47 @@ def search_view(x):
                 print('change to english')
                 flaceholder = "Search"
             if box:
-                print('Change to text area')
-                WebDriverWait(driver, 10).until(
+                WebDriverWait(driver, 5).until(
                     EC.presence_of_element_located((By.XPATH, '//textarea[contains(@title, "%s")]' % flaceholder)))
                 search_form = driver.find_element(By.XPATH, '//textarea[contains(@title, "%s")]' % flaceholder)
             else:
-                print('Search input')
-                WebDriverWait(driver, 10).until(
+                WebDriverWait(driver, 5).until(
                     EC.presence_of_element_located((By.XPATH, '//input[contains(@title, "%s")]' % flaceholder)))
                 search_form = driver.find_element(By.XPATH, '//input[contains(@title, "%s")]' % flaceholder)
             print('find box ok')
         except Exception as e:
             print('box fail')
-        time.sleep(sleep_time)
+            print('list href empty! maybe block by google')
+            try:
+                solver = RecaptchaSolver(driver=driver)
+                time.sleep(1)
+                recaptcha_iframe = driver.find_element(By.XPATH, '//iframe[@title="reCAPTCHA"]')
+                time.sleep(1)
+                solver.click_recaptcha_v2(iframe=recaptcha_iframe)
+                time.sleep(1)
+            except Exception as e:
+                print("resolver capcha fail ", e)
         search_form.send_keys(str(data) + " masothue.com")
         # search_form.send_keys('test '+ str(i))
-        time.sleep(sleep_time)
+        # time.sleep(1)
         action.send_keys(Keys.ENTER)
         action.perform()
     except Exception as e:
         print("Failedd ", e)
         return None
-    time.sleep(1)
     list_a_masothue = driver.find_elements(By.XPATH, '//a[contains(@href, "%s")]' % url_contain)
 
     if not list_a_masothue:
         print('list href empty! maybe block by google')
         try:
-            print('Try resolver capcha !')
             solver = RecaptchaSolver(driver=driver)
+            time.sleep(1)
             recaptcha_iframe = driver.find_element(By.XPATH, '//iframe[@title="reCAPTCHA"]')
+            time.sleep(1)
             solver.click_recaptcha_v2(iframe=recaptcha_iframe)
-            time.sleep(5)
-            print('Resolver capcha done !')
+            time.sleep(1)
         except Exception as e:
             print("resolver capcha fail ", e)
-
 
     for a in list_a_masothue:
         href = a.get_attribute('href')
@@ -198,9 +197,9 @@ def search_view(x):
             print('None')
             return None
 
-path = '/home/ubuntu/data_all/data'
-done_path = '/home/ubuntu/data_all/data_crawler'
-file_group_number = int(sys.argv[1])
+path = '/Users/tranthong/Downloads/MaSoThue/data1'
+done_path = '/Users/tranthong/Downloads/MaSoThue/data_crawler'
+file_group_number = 1
 
 files = glob.glob(path + "/*.csv")
 for filename in files:
